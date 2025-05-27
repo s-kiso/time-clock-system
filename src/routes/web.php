@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RecordController;
+use App\Models\Record;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +16,7 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::get('/attendance', [AuthController::class, 'register']);
+Route::get('/attendance', [RecordController::class, 'attendance']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [AuthController::class, 'index']);

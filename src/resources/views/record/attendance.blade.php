@@ -13,4 +13,17 @@
 
 @include('components.user_header')
 
+<div class="status">
+
+</div>
+<div class="date">
+    {{ $date }}
+</div>
+<div class="time">
+    {{ $time }}
+</div>
+<form action="attendance" method="post" class="register__form" id="register__form">
+    {{ $status }}
+</form>
+
 @endsection
