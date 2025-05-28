@@ -29,4 +29,27 @@ class RecordController extends Controller
 
         return view('record/attendance', compact('date', 'time', 'status'));
     }
+
+    public function attended(Request $request)
+    {
+        $status = $request->input('status');
+        $date = Carbon::now();
+        $user_id = auth()->id();
+        // dd($user_id);
+
+        if($status="出勤"){
+            $attendance = new Record();
+            $attendance->user_id = $user_id;
+            $attendance->year = $date->year;
+            $attendance->month = $date->month;
+            $attendance->day = $date->day;
+            $attendance->clock_in = $date->isoFormat('HH:mm');
+            $attendance->save();
+        }
+        
+
+        
+
+        return view('record/attendance');
+    }
 }

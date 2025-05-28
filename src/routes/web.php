@@ -17,7 +17,8 @@ use App\Models\Record;
 */
 
 Route::get('/attendance', [RecordController::class, 'attendance']);
+Route::post('/attendance', [RecordController::class, 'attended']);
 
-Route::middleware('auth')->group(function () {
-    Route::get('/', [AuthController::class, 'index']);
-});
+// Route::middleware('auth')->group(function () {
+//     Route::get('/', [AuthController::class, 'index']);
+// });

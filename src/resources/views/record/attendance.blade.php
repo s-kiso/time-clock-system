@@ -22,8 +22,11 @@
 <div class="time">
     {{ $time }}
 </div>
-<form action="attendance" method="post" class="register__form" id="register__form">
-    {{ $status }}
+<form action="/attendance" method="post" class="attendance__form" id="attendance__form">
+    @csrf
+    <input type="hidden" value="{{ $status }}" name="status">
+    <!-- <input type="hidden" value="{{ Auth::id() }}" name="user_id"> -->
+    <button>{{ $status }}</button>
 </form>
 
 @endsection
