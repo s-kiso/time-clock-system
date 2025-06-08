@@ -7,8 +7,8 @@
     <nav class="header__nav">
         <ul>
             <!-- 退勤後分ける処理を書く必要あり -->
-            <li>勤怠</li>
-            <li>勤怠一覧</li>
+            <li><a href="/attendance">勤怠</a></li>
+            <li><a href="/attendance/list">勤怠一覧</a></li>
             <li>申請</li>
             <li>
                 <form action="/logout" method="post">

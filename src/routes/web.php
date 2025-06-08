@@ -16,8 +16,12 @@ use App\Models\Record;
 |
 */
 
-Route::get('/attendance', [RecordController::class, 'attendance']);
+Route::get('/attendance', [RecordController::class, 'attendance'])->name('attendance_home');
 Route::post('/attendance', [RecordController::class, 'attended']);
+Route::post('/rest', [RecordController::class, 'rest']);
+Route::get('/attendance/list', [RecordController::class, 'list'])->name('list_home');
+Route::post('/attendance/list', [RecordController::class, 'listed']);
+Route::get('/attendance/{id}', [RecordController::class, 'detail'])->name('record.detail');
 
 // Route::middleware('auth')->group(function () {
 //     Route::get('/', [AuthController::class, 'index']);
