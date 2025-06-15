@@ -98,15 +98,16 @@ class RecordController extends Controller
 
     public function list()
     {
-        if(isset($request)){
-            $year = explode('-', $request)[0];
-            $month = explode('-', $request)[1];
+        //sessionで受け取ったデータを消す必要があるかも？session_start, delete
+        $year_month = session('year_month');
+        if(isset($year_month)){
+            $year = intval(explode('-', $year_month)[0]);
+            $month = intval(explode('-', $year_month)[1]);
         }else{
             $now = Carbon::now();
             $year = $now->year;
             $month = $now->month;
         }
-        // dd($month);
         $year_month = $year . "-" . $month;
         $user_id = auth()->id();
         $records = Record::where([
@@ -115,15 +116,16 @@ class RecordController extends Controller
             ['month', $month],
         ])->get();
 
-        foreach($records as $record){
+        foreach($records as $loop => $record){
             $rests = $record->rest;
             $rest_sum = 0;
             $work_sum = 0;
+            $day = $record->day;
             //文字列で保存されている休憩開始、終了時刻を再度Carbonにする際に日付を利用
             $date = $record->year . "-" . $record->month . "-" . $record->day;
-            //日付をCarbon形式で表示するために$recordにdate列を追加
-            $date_display = new Carbon($date);
-            $record->date = $date_display->isoformat('MM/DD(ddd)');
+            // 日付をCarbon形式で表示するために$recordにdate列を追加
+            // $date_display = new Carbon($date);
+            // $record->date = $date_display->isoformat('MM/DD(ddd)');
             //以下の処理、テーブルに保存する段階でやっておいたほうが良い？（restsテーブルに休憩時間合計列を追加する）
             foreach($rests as $rest){
                 //休憩中に一覧を見た際、endがないためif文で分ける必要がある？→今の時間までの休憩時間を表示？それともその前の休憩までの時間を表示？
@@ -165,18 +167,39 @@ class RecordController extends Controller
             $work_time = date('G:i', strtotime($work_time));
             //$recordに勤務時間を追加
             $record->work_time = $work_time;
+            // $records[日付]という形にする
+            $records[$day] = $record;
+            // 元の$recordを削除
+            $records->pull($loop);
         }
-        // dd($records);
+
+        $get_days = new Carbon($year_month);
+        $days = $get_days->daysInMonth;
         
-        return view('record/list', compact('records', 'year_month'));
+        //繰り返し使って06/01~30までのデータを作り、$date(日付)に入れてcompactで渡してやりたい
+        $date_month=[];
+        for ($i = 1; $i <= $days; $i++) {
+            $date_display = new Carbon($year_month. '-'. $i);
+            $date_display = $date_display->isoformat('MM/DD(ddd)');
+            $date_month[$i] = $date_display;
+        }
+        $year_month = $get_days->format('Y/m');
+
+        return view('record/list', compact('records', 'year_month', 'days', 'month', 'date_month'));
     }
 
     public function listed(Request $request)
     {
-        $request = $request->input('month');
+        $now_month = new Carbon(str_replace('/', '-', $request->input('now')));
+        $type = $request->input('type');
 
-        return redirect()->route('list_home')->with(compact('request'));
-        //redirectして処理しようとしたがうまくいかない。$requestの渡し方・受け取り方は？
+        if($type == "previous"){
+            $year_month = $now_month->subMonthNoOverflow();
+        }else{
+            $year_month = $now_month->addMonthNoOverflow();
+        }
+
+        return redirect()->route('list_home')->with(compact('year_month'));
     }
 
     public function detail($id)
@@ -184,6 +207,7 @@ class RecordController extends Controller
         $record = Record::find($id);
         $rests = $record->rest;
         $user = $record->user;
+        // dd($rests);
         return view('record/detail', compact('record', 'rests', 'user'));
     }
 
