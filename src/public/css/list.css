@@ -40,6 +40,11 @@
     opacity: 30%;
 }
 
+.list__header-calendar{
+    display: flex;
+    align-items: center;
+}
+
 .list__header-calendar img{
     width: 25px;
     height: 25px;

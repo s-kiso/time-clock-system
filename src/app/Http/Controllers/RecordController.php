@@ -127,30 +127,51 @@ class RecordController extends Controller
             // $date_display = new Carbon($date);
             // $record->date = $date_display->isoformat('MM/DD(ddd)');
             //以下の処理、テーブルに保存する段階でやっておいたほうが良い？（restsテーブルに休憩時間合計列を追加する）
-            foreach($rests as $rest){
+            foreach($rests as $rest_loop => $rest){
                 //休憩中に一覧を見た際、endがないためif文で分ける必要がある？→今の時間までの休憩時間を表示？それともその前の休憩までの時間を表示？
-                if(!isset($rest->end)){
-                    $rest_sum = 0;
+                // dd($rest_loop);
+                if($rest_loop == 0){
+                    if (!isset($rest->end)) {
+                        $record->rest_time = null;
+                    } else {
+                        //文字列で保存されている休憩開始、終了時刻を再度Carbonに
+                        $start_hour = new Carbon($date . "" . $rest->start);
+                        $end_hour = new Carbon($date . "" . $rest->end);
+                        //分で休憩合計時間を算出
+                        $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
+                        //分で求まった合計を時間と分に分ける
+                        $rest_hour_sum = floor($rest_sum / 60);
+                        $rest_minute_sum = $rest_sum % 60;
+                        $rest_time = $rest_hour_sum . ':' . $rest_minute_sum;
+                        //strtotime関数で時間表示に
+                        $rest_time = date('G:i', strtotime($rest_time));
+                        //$recordに休憩時間を追加
+                        $record->rest_time = $rest_time;
+                    }
                 }else{
-                    //文字列で保存されている休憩開始、終了時刻を再度Carbonに
-                    $start_hour = new Carbon($date . "" .$rest->start);
-                    $end_hour = new Carbon($date . "" . $rest->end);
-                    //分で休憩合計時間を算出
-                    $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
+                    if (!isset($rest->end)) {
+                        $rest_sum = $rest_sum;
+                    } else {
+                        //文字列で保存されている休憩開始、終了時刻を再度Carbonに
+                        $start_hour = new Carbon($date . "" . $rest->start);
+                        $end_hour = new Carbon($date . "" . $rest->end);
+                        //分で休憩合計時間を算出
+                        $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
+                    }
+                    //分で求まった合計を時間と分に分ける
+                    $rest_hour_sum = floor($rest_sum / 60);
+                    $rest_minute_sum = $rest_sum % 60;
+                    $rest_time = $rest_hour_sum . ':' . $rest_minute_sum;
+                    //strtotime関数で時間表示に
+                    $rest_time = date('G:i', strtotime($rest_time));
+                    //$recordに休憩時間を追加
+                    $record->rest_time = $rest_time;
                 }
             }
-            //分で求まった合計を時間と分に分ける
-            $rest_hour_sum = floor($rest_sum / 60);
-            $rest_minute_sum = $rest_sum % 60;
-            $rest_time = $rest_hour_sum . ':' . $rest_minute_sum;
-            //strtotime関数で時間表示に
-            $rest_time = date('G:i',strtotime($rest_time));
-            //$recordに休憩時間を追加
-            $record->rest_time=$rest_time;
 
             //勤務合計時間も休憩合計時間と同様に計算、$recordに追加
             if (!isset($record->clock_out)) {
-                $work_sum = 0;
+                $record->work_time = null;
             } else {
                 //文字列で保存されている休憩開始、終了時刻を再度Carbonに
                 $start_hour = new Carbon($date . "" . $record->clock_in);
@@ -158,15 +179,15 @@ class RecordController extends Controller
                 //分で勤務合計時間を算出
                 $work_sum = $start_hour->diffInMinutes($end_hour);
                 $work_sum = $work_sum - $rest_sum;
+                //分で求まった合計を時間と分に分ける
+                $work_hour_sum = floor($work_sum / 60);
+                $work_minute_sum = $work_sum % 60;
+                $work_time = $work_hour_sum . ':' . $work_minute_sum;
+                //strtotime関数で時間表示に
+                $work_time = date('G:i', strtotime($work_time));
+                //$recordに勤務時間を追加
+                $record->work_time = $work_time;
             }
-            //分で求まった合計を時間と分に分ける
-            $work_hour_sum = floor($work_sum / 60);
-            $work_minute_sum = $work_sum % 60;
-            $work_time = $work_hour_sum . ':' . $work_minute_sum;
-            //strtotime関数で時間表示に
-            $work_time = date('G:i', strtotime($work_time));
-            //$recordに勤務時間を追加
-            $record->work_time = $work_time;
             // $records[日付]という形にする
             $records[$day] = $record;
             // 元の$recordを削除
@@ -175,7 +196,6 @@ class RecordController extends Controller
 
         $get_days = new Carbon($year_month);
         $days = $get_days->daysInMonth;
-        
         //繰り返し使って06/01~30までのデータを作り、$date(日付)に入れてcompactで渡してやりたい
         $date_month=[];
         for ($i = 1; $i <= $days; $i++) {
