@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ListController extends Controller
 {
-    public function list()
+    public function list(Request $request)
     {
+        if (!($this->isAdmin($request))) {
+            return redirect('/login');
+        };
         $date = session('date');
         if (isset($date)) {
             $now = $date;
@@ -25,6 +29,9 @@ class ListController extends Controller
 
     public function listed(Request $request)
     {
+        if(!($this->isAdmin($request))) {
+            return redirect('/login');
+        };
         $now = $request->input('now');
         $now_date = new Carbon($request->input('now'));
         $type = $request->input('type');
@@ -36,5 +43,15 @@ class ListController extends Controller
         }
 
         return redirect()->route('admin_list_home')->with(compact('date'));
+    }
+
+    private function isAdmin(Request $request) {
+        $user = $request->user();
+        // dd(isset($user) && $user->admin_check);
+        if (!(isset($user) && $user->admin_check)) {
+            return false;
+        } 
+
+        return true;
     }
 }
