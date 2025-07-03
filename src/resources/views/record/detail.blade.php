@@ -11,6 +11,18 @@
 <!-- 本体 -->
 @section('content')
 
+{{-- @if($admin_check == "admin")
+    @include('components.admin_header')
+@else
+    @include('components.user_header')
+@endif --}}
+
+{{-- @if($user->admin_check == null)
+    @include('components.user_header')
+@else
+    @include('components.admin_header')
+@endif --}}
+
 @include('components.user_header')
 
 <div class="main">

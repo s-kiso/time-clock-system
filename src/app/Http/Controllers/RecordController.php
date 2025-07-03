@@ -169,6 +169,8 @@ class RecordController extends Controller
                 }
             }
 
+            // 休憩が0でも表示するなら、勤務が終了しているかif分で判定し終了→135行目のnullを0にする
+
             //勤務合計時間も休憩合計時間と同様に計算、$recordに追加
             if (!isset($record->clock_out)) {
                 $record->work_time = null;
@@ -227,8 +229,9 @@ class RecordController extends Controller
         $record = Record::find($id);
         $rests = $record->rest;
         $user = $record->user;
-        // dd($rests);
-        return view('record/detail', compact('record', 'rests', 'user'));
+        $admin_check = null;
+
+        return view('record/detail', compact('record', 'rests', 'user', 'admin_check'));
     }
 
 }

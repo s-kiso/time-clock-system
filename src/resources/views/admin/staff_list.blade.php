@@ -1,7 +1,7 @@
 @extends('layouts.default')
 
 <!-- タイトル -->
-@section('title', '勤怠一覧')
+@section('title', '管理者勤怠一覧')
 
 <!-- css読み込み -->
 @section('css')
@@ -12,21 +12,20 @@
 @section('content')
 
 
-@include('components.user_header')
+@include('components.admin_header')
 
 <div class="main">
     <div class="contents">
-        <h1 class="page__title">勤怠一覧</h1>
+        <h1 class="page__title">{{ $user_info->name }}さんの勤怠</h1>
 
-    
-    
         <div class="list__header">
-            <form action="/attendance/list" method="post" class="list__form" id="list__form">
+            <form action={{ route('staff.detail_post', ['id'=>$user_info->id]) }} method="post" class="list__form" id="list__form">
                 @csrf
                 <div class="list__header-previous">
                     
                     <input type="hidden" value="{{ $year_month }}" name="now">
                     <input type="hidden" value="previous" name="type">
+                    <input type="hidden" value="{{ $user_info->id }}" name="user_id">
                     <button><img src="{{ asset('img/arrow.png') }}" alt="左矢印">前月</button>
                 </div>
             </form>
@@ -35,11 +34,12 @@
                 <span class="list__header-date">{{ $year_month }}</span>
             </div>
             
-            <form action="/attendance/list" method="post" class="list__form" id="list__form">
+            <form action={{ route('staff.detail_post', ['id'=>$user_info->id]) }} method="post" class="list__form" id="list__form">
                 @csrf
                 <div class="list__header-next">
                     <input type="hidden" value="{{ $year_month }}" name="now">
                     <input type="hidden" value="next" name="type">
+                    <input type="hidden" value="{{ $user_info->id }}" name="user_id">
                     <button>翌月</button>
                     <img src="{{ asset('img/arrow.png') }}" alt="右矢印">
                 </div>

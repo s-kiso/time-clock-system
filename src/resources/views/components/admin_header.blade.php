@@ -6,8 +6,8 @@
     @if(Auth::check())
     <nav class="header__nav">
         <ul>
-            <li><a href="/attendance/list">勤怠一覧</a></li>
-            <li><a href="/attendance">スタッフ一覧</a></li>
+            <li><a href="/admin/attendance/list">勤怠一覧</a></li>
+            <li><a href="/admin/staff/list">スタッフ一覧</a></li>
             <li>申請一覧</li>
             <li>
                 <form action="/admin/logout" method="post">
