@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use app\http\Requests\AttendanceRequest;
 use App\Models\Record;
 use App\Models\User;
 use App\Models\Rest;
@@ -264,8 +265,13 @@ class ListController extends Controller
         return view('admin/staff_list', compact('records', 'year_month', 'days', 'month', 'date_month', 'user_info'));
     }
 
-    public function staff_detail_post(Request $request)
+    public function staff_detail_post(AttendanceRequest $request)
     {
+        // 管理者権限の確認
+        if (!($this->isAdmin($request))) {
+            return redirect('/admin/login');
+        };
+
         $now_month = new Carbon(str_replace('/', '-', $request->input('now')));
         $type = $request->input('type');
         $id = $request->input('user_id');
@@ -279,15 +285,37 @@ class ListController extends Controller
         return redirect()->route('staff.detail', ['id'=>$id])->with(compact('year_month'));
     }
 
-    // public function detail($id)
-    // {
-    //     $record = Record::find($id);
-    //     $rests = $record->rest;
-    //     $user = $record->user;
-    //     $admin_check = "admin";
+    public function approve($attendance_correct_request)
+    {
+        $record = Record::find($attendance_correct_request);
+        
+        $user = $record->user;
+        $original_id = $record->id;
+        // $now_user = Auth::user();
 
-    //     return view('record/detail', compact('record', 'rests', 'user', 'admin_check'));
-    // }
+        $modify_request = $record->modify_request;
+        $status = $modify_request->status;
+        $rests = $modify_request->modify_request_rest;
+        $record = $modify_request;
+        // dd($rests);
+
+        return view('admin/approve', compact('record', 'rests', 'user', 'status', 'original_id'));
+    }
+
+    public function approved($attendance_correct_request)
+    {
+        $record = Record::find($attendance_correct_request);
+        $user = $record->user;
+        $original_id = $record->id;
+        $modify_request = $record->modify_request;
+        $modify_request->status = 2;
+        $modify_request->update();
+        $status = $modify_request->status;
+        $rests = $modify_request->modify_request_rest;
+        $record = $modify_request;
+
+        return view('admin/approve', compact('record', 'rests', 'user', 'status', 'original_id'));
+    }
 
     private function isAdmin(Request $request) {
         $user = $request->user();
@@ -295,7 +323,6 @@ class ListController extends Controller
         if (!(isset($user) && $user->admin_check)) {
             return false;
         }
-
         return true;
     }
 }

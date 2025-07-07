@@ -16,6 +16,13 @@ class CreateModifyRequestsTable extends Migration
         Schema::create('modify_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('record_id');
+            $table->foreignId('user_id');
+            $table->string('year');
+            $table->string('month');
+            $table->string('day');
+            $table->time('clock_in');
+            $table->time('clock_out');
+            $table->string('notes');
             $table->string('status');
             $table->timestamps();
         });

@@ -11,11 +11,23 @@ class Modify_request extends Model
 
     protected $fillable = [
         'record_id',
-        'status'
+        'status',
+        'user_id',
+        'year',
+        'month',
+        'day',
+        'clock_in',
+        'clock_out',
+        'notes'
     ];
 
     public function Record()
     {
         return $this->belongsTo(Record::class);
+    }
+
+    public function Modify_request_rest()
+    {
+        return $this->hasMany(Modify_request_rest::class);
     }
 }

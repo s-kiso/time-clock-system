@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Fortify\UpdateUserPassword;
+use App\Models\Modify_request;
+use App\Models\Modify_request_rest;
 use App\Models\Record;
 use App\Models\Rest;
 use Carbon\Carbon;
 use Illuminate\Auth\Recaller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use app\http\Requests\AttendanceRequest;
 
 class RecordController extends Controller
 {
@@ -227,11 +231,110 @@ class RecordController extends Controller
     public function detail($id)
     {
         $record = Record::find($id);
-        $rests = $record->rest;
         $user = $record->user;
-        $admin_check = null;
+        $original_id = $record->id;
+        $now_user = Auth::user();
+        
+        $modify_request = $record->modify_request;
+        if($modify_request != null){
+            $status = $modify_request->status;
+            $rests = $modify_request->modify_request_rest;
+            $record = $modify_request;
+        }else{
+            $status = null;
+            $rests = $record->rest;
+        }
 
-        return view('record/detail', compact('record', 'rests', 'user', 'admin_check'));
+        return view('record/detail', compact('record', 'rests', 'user', 'now_user', 'status', 'original_id'));
+    }
+
+    public function detailed($id, AttendanceRequest $request)
+    {
+        // dd($request->all());
+        $record = Record::find($id);
+        $now_user = Auth::user();
+
+        $modify_record = new Modify_request();
+        $modify_record->record_id = $record->id;
+        $modify_record->user_id = $record->user_id;
+        $modify_record->year = $record->year;
+        $modify_record->month = $record->month;
+        $modify_record->day = $record->day;
+        $modify_record->clock_in = $request->input("clock_in");
+        $modify_record->clock_out = $request->input('clock_out');
+        $modify_record->notes = $request->input('notes');
+        // 1:承認待ち, 2:承認済みにする
+        if($now_user->admin_check == null){
+            $modify_record->status = 1;
+        }else{
+            $modify_record->status = 2;
+        }
+        
+        $modify_record->save();
+
+        $rest_number = $request->input('rest_number');
+        for($i=1; $i<=$rest_number; $i++){
+            $start_i = "start" . $i;
+            $end_i = "end" . $i;
+            $start = $request->input($start_i);
+            $end = $request->input($end_i);
+            
+            if($start != null){
+                $modify_rest = new Modify_request_rest();
+                $modify_rest->modify_request_id = $modify_record->id;
+                $modify_rest->start = $start;
+                $modify_rest->end = $end;
+                $modify_rest->save();
+            }
+        }
+
+        $user = $record->user;
+        $original_id = $record->id;
+        $record = $modify_record;
+        // dd($record);
+        $rests = $record->modify_request_rest;
+        // dd($rests);
+        $status = $record->status;
+       
+        return view('record/detail', compact('record', 'rests', 'user', 'now_user', 'status', 'original_id'));
+    }
+
+    public function apply(Request $request)
+    {
+        $done_check = $request->query('done');
+        $now_user = Auth::user();
+
+        if($done_check == "true"){
+            if ($now_user->admin_check == null) {
+                $modify_requests = Modify_request::where([
+                    ['user_id', $now_user->id],
+                    ['status', 2],
+                ])->get();
+            } else {
+                $modify_requests = Modify_request::where([
+                    ['status', 2],
+                ])->get();
+            }
+        }else{
+            if ($now_user->admin_check == null) {
+                $modify_requests = Modify_request::where([
+                    ['user_id', $now_user->id],
+                    ['status', 1],
+                ])->get();
+            } else {
+                $modify_requests = Modify_request::where([
+                    ['status', 1],
+                ])->get();
+            }
+        }
+        
+        foreach($modify_requests as $modify_request){
+            $date = $modify_request->year . "-" . $modify_request->month . "-" . $modify_request->day;
+            $date = new Carbon($date);
+            $modify_request->date = $date->isoFormat('YYYY/MM/DD');
+        }
+        
+        return view('record/modify', compact('now_user', 'modify_requests', 'done_check'));
     }
 
 }

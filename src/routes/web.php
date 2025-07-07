@@ -25,6 +25,8 @@ Route::post('/rest', [RecordController::class, 'rest'])->middleware('auth');
 Route::get('/attendance/list', [RecordController::class, 'list'])->name('list_home')->middleware('auth');
 Route::post('/attendance/list', [RecordController::class, 'listed']);
 Route::get('/attendance/{id}', [RecordController::class, 'detail'])->name('record.detail')->middleware('auth');
+Route::post('/attendance/{id}', [RecordController::class, 'detailed'])->name('record.modify');
+Route::get('/stamp_correction_request/list', [RecordController::class, 'apply']);
 
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin_login_show');
 Route::post('/admin/login', [AdminLoginController::class, 'login']);
@@ -34,6 +36,10 @@ Route::post('/admin/attendance/list', [ListController::class, 'listed']);
 Route::get('/admin/staff/list', [ListController::class, 'staff_list']);
 Route::get('/admin/attendance/staff/{id}', [ListController::class, 'staff_detail'])->name('staff.detail');
 Route::post('/admin/attendance/staff/{id}', [ListController::class, 'staff_detail_post'])->name('staff.detail_post');
+Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [ListController::class, 'approve'])->name('modify.approve');
+Route::post('/stamp_correction_request/approve/{attendance_correct_request}', [ListController::class, 'approved'])->name('modify.approved');
+
+// Route::get('/attendance/{admin_id}', [ListController::class, 'detail'])->name('admin_record.detail');
 
 // Route::post('/admin/list', [AdminController::class, 'list']);
 
