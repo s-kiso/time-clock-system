@@ -265,7 +265,7 @@ class ListController extends Controller
         return view('admin/staff_list', compact('records', 'year_month', 'days', 'month', 'date_month', 'user_info'));
     }
 
-    public function staff_detail_post(AttendanceRequest $request)
+    public function staff_detail_post(Request $request)
     {
         // 管理者権限の確認
         if (!($this->isAdmin($request))) {

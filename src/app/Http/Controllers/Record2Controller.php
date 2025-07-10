@@ -22,27 +22,27 @@ class RecordController extends Controller
         $time = $now->isoFormat('HH:mm');
         $compare_date = [$now->year, $now->month, $now->day];
         $user_id = auth()->id();
-        
+
         // ログイン中ユーザーの最新出退勤データ取り出し
         $record_data = Record::where('user_id', $user_id)->orderBy('id', 'desc')->first();
 
-        if(!isset($record_data)){ //記録なし＝初めての打刻（出勤）
+        if (!isset($record_data)) { //記録なし＝初めての打刻（出勤）
             $status = "勤務外";
-        }elseif(isset($record_data->clock_out)){ //退勤あり=全て埋まっている（お疲れさまでしたor出勤）
+        } elseif (isset($record_data->clock_out)) { //退勤あり=全て埋まっている（お疲れさまでしたor出勤）
             $record_date = [$record_data->year, $record_data->month, $record_data->day];
-            if($compare_date == $record_date){
+            if ($compare_date == $record_date) {
                 $status = "退勤済";
-            }else{
+            } else {
                 $status = "勤務外";
             }
-        }else{ //退勤なし出勤あり（休憩入or休憩戻or退勤）
+        } else { //退勤なし出勤あり（休憩入or休憩戻or退勤）
             $record_id = $record_data->id;
             $rest_data = Rest::where('record_id', $record_id)->orderBy('id', 'desc')->first();
-            if(!isset($rest_data)){
+            if (!isset($rest_data)) {
                 $status = "出勤中";
-            }elseif(isset($rest_data->end)){
+            } elseif (isset($rest_data->end)) {
                 $status = "出勤中";
-            }else{
+            } else {
                 $status = "休憩中";
             }
         }
@@ -56,7 +56,7 @@ class RecordController extends Controller
         $date = Carbon::now();
         $user_id = auth()->id();
 
-        switch($status){
+        switch ($status) {
             case "勤務外":
                 $attendance = new Record();
                 $attendance->user_id = $user_id;
@@ -104,10 +104,10 @@ class RecordController extends Controller
     {
         //sessionで受け取ったデータを消す必要があるかも？session_start, delete
         $year_month = session('year_month');
-        if(isset($year_month)){
+        if (isset($year_month)) {
             $year = intval(explode('-', $year_month)[0]);
             $month = intval(explode('-', $year_month)[1]);
-        }else{
+        } else {
             $now = Carbon::now();
             $year = $now->year;
             $month = $now->month;
@@ -120,7 +120,7 @@ class RecordController extends Controller
             ['month', $month],
         ])->get();
 
-        foreach($records as $loop => $record){
+        foreach ($records as $loop => $record) {
             $rests = $record->rest;
             $rest_sum = 0;
             $work_sum = 0;
@@ -131,10 +131,10 @@ class RecordController extends Controller
             // $date_display = new Carbon($date);
             // $record->date = $date_display->isoformat('MM/DD(ddd)');
             //以下の処理、テーブルに保存する段階でやっておいたほうが良い？（restsテーブルに休憩時間合計列を追加する）
-            foreach($rests as $rest_loop => $rest){
+            foreach ($rests as $rest_loop => $rest) {
                 //休憩中に一覧を見た際、endがないためif文で分ける必要がある？→今の時間までの休憩時間を表示？それともその前の休憩までの時間を表示？
                 // dd($rest_loop);
-                if($rest_loop == 0){
+                if ($rest_loop == 0) {
                     if (!isset($rest->end)) {
                         $record->rest_time = null;
                     } else {
@@ -152,7 +152,7 @@ class RecordController extends Controller
                         //$recordに休憩時間を追加
                         $record->rest_time = $rest_time;
                     }
-                }else{
+                } else {
                     if (!isset($rest->end)) {
                         $rest_sum = $rest_sum;
                     } else {
@@ -203,9 +203,9 @@ class RecordController extends Controller
         $get_days = new Carbon($year_month);
         $days = $get_days->daysInMonth;
         //繰り返し使って06/01~30までのデータを作り、$date(日付)に入れてcompactで渡してやりたい
-        $date_month=[];
+        $date_month = [];
         for ($i = 1; $i <= $days; $i++) {
-            $date_display = new Carbon($year_month. '-'. $i);
+            $date_display = new Carbon($year_month . '-' . $i);
             $date_display = $date_display->isoformat('MM/DD(ddd)');
             $date_month[$i] = $date_display;
         }
@@ -219,9 +219,9 @@ class RecordController extends Controller
         $now_month = new Carbon(str_replace('/', '-', $request->input('now')));
         $type = $request->input('type');
 
-        if($type == "previous"){
+        if ($type == "previous") {
             $year_month = $now_month->subMonthNoOverflow();
-        }else{
+        } else {
             $year_month = $now_month->addMonthNoOverflow();
         }
 
@@ -234,13 +234,13 @@ class RecordController extends Controller
         $user = $record->user;
         $original_id = $record->id;
         $now_user = Auth::user();
-        
+
         $modify_request = $record->modify_request;
-        if($modify_request != null){
+        if ($modify_request != null) {
             $status = $modify_request->status;
             $rests = $modify_request->modify_request_rest;
             $record = $modify_request;
-        }else{
+        } else {
             $status = null;
             $rests = $record->rest;
         }
@@ -264,25 +264,22 @@ class RecordController extends Controller
         $modify_record->clock_out = $request->input('clock_out');
         $modify_record->notes = $request->input('notes');
         // 1:承認待ち, 2:承認済みにする
-        if($now_user->admin_check == null){
+        if ($now_user->admin_check == null) {
             $modify_record->status = 1;
-        }else{
+        } else {
             $modify_record->status = 2;
         }
-        
+
         $modify_record->save();
 
-        $start_data = $request->input('start');
-
-        dd($start_data);
-        $end_data = $request->input('end');
-
         $rest_number = $request->input('rest_number');
-        for($i=0; $i<$rest_number; $i++){
-            $start = $start_data[$i];
-            $end = $end_data[$i];
-            
-            if($start != null){
+        for ($i = 1; $i <= $rest_number; $i++) {
+            $start_i = "start" . $i;
+            $end_i = "end" . $i;
+            $start = $request->input($start_i);
+            $end = $request->input($end_i);
+
+            if ($start != null) {
                 $modify_rest = new Modify_request_rest();
                 $modify_rest->modify_request_id = $modify_record->id;
                 $modify_rest->start = $start;
@@ -298,7 +295,7 @@ class RecordController extends Controller
         $rests = $record->modify_request_rest;
         // dd($rests);
         $status = $record->status;
-       
+
         return view('record/detail', compact('record', 'rests', 'user', 'now_user', 'status', 'original_id'));
     }
 
@@ -307,7 +304,7 @@ class RecordController extends Controller
         $done_check = $request->query('done');
         $now_user = Auth::user();
 
-        if($done_check == "true"){
+        if ($done_check == "true") {
             if ($now_user->admin_check == null) {
                 $modify_requests = Modify_request::where([
                     ['user_id', $now_user->id],
@@ -318,7 +315,7 @@ class RecordController extends Controller
                     ['status', 2],
                 ])->get();
             }
-        }else{
+        } else {
             if ($now_user->admin_check == null) {
                 $modify_requests = Modify_request::where([
                     ['user_id', $now_user->id],
@@ -330,14 +327,13 @@ class RecordController extends Controller
                 ])->get();
             }
         }
-        
-        foreach($modify_requests as $modify_request){
+
+        foreach ($modify_requests as $modify_request) {
             $date = $modify_request->year . "-" . $modify_request->month . "-" . $modify_request->day;
             $date = new Carbon($date);
             $modify_request->date = $date->isoFormat('YYYY/MM/DD');
         }
-        
+
         return view('record/modify', compact('now_user', 'modify_requests', 'done_check'));
     }
-
 }

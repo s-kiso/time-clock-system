@@ -76,9 +76,9 @@
                     @if($rests->isEmpty())
                         <tr class="table__time">
                             <th class="table__header">休憩</th>
-                            <td class="table__content"><input type="time" value="" name="start[]" class="table__content-time"></td>
+                            <td class="table__content"><input type="time" value="" name="start1" class="table__content-time"></td>
                             <td class="table__content-wave">～</td>
-                            <td class="table__content"><input type="time" value="" name="end[]" class="table__content-time"></td>
+                            <td class="table__content"><input type="time" value="" name="end1" class="table__content-time"></td>
                             <input type="hidden" name="rest_number" value=1>
                         </tr>
                     @else
@@ -91,16 +91,16 @@
                                     休憩{{ $loop->iteration }}
                                 @endif
                             </th>
-                            <td class="table__content"><input type="time" value="{{ substr($rest->start, 0, 5) }}" name="start[]" class="table__content-time"></td>
+                            <td class="table__content"><input type="time" value="{{ substr($rest->start, 0, 5) }}" name="start{{ $loop->iteration }}" class="table__content-time"></td>
                             <td class="table__content-wave">～</td>
-                            <td class="table__content"><input type="time" value="{{ substr($rest->end, 0, 5) }}"class="table__content-time" name="end[]" ></td>
+                            <td class="table__content"><input type="time" value="{{ substr($rest->end, 0, 5) }}"class="table__content-time" name="end{{ $loop->iteration }}" ></td>
                         </tr>
                             @if($loop->last)
                                 <tr class="table__time">
                                     <th class="table__header">休憩{{ ($loop->iteration)+1 }}</th>
-                                    <td class="table__content"><input type="time" value="" name="start[]" class="table__content-time"></td>
+                                    <td class="table__content"><input type="time" value="" name="start{{ ($loop->iteration)+1 }}" class="table__content-time"></td>
                                     <td class="table__content-wave">～</td>
-                                    <td class="table__content"><input type="time" value="" name="end[]" class="table__content-time"></td>
+                                    <td class="table__content"><input type="time" value="" name="end{{ ($loop->iteration)+1 }} class="table__content-time""></td>
                                 </tr>
                                 <input type="hidden" name="rest_number" value={{$loop->iteration + 1}}>
                             @endif
@@ -137,11 +137,8 @@
                 @enderror
             </div>
 
-    @php
-        dump($errors)
-    @endphp
             <div class="form__error">
-                @error('start.*')
+                @error('start.required')
                 <tr>{{ $message }}</tr>
                 @enderror
             </div>
