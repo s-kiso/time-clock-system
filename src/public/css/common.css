@@ -19,11 +19,6 @@ button{
     appearance: none;
 }
 
-/* select{
-    border: none;
-    outline: none;
-} */
-
 header{
     align-items: center;
     background-color: #000;
@@ -34,7 +29,6 @@ header{
     height: 60px;
     padding: 0 30px;
     position: sticky;
-    /* z-index: var(--mer-z-index-navigation-top); この部分の意味は？ */
     top: 0px;
 }
 
@@ -57,7 +51,6 @@ header{
     margin-right: 30px;
 }
 
-/* 仕様：カーソル持ってきた際の挙動は太字でOK？ */
 .header__nav li:hover{
     font-weight: bold;
 }
@@ -67,7 +60,6 @@ header{
     font-size: 16px;
 }
 
-/* 仕様：カーソル持ってきた際の挙動は太字でOK？ */
 .header__logout:hover{
     font-weight: bold;
 }
@@ -84,7 +76,6 @@ header{
     height: 45px;
 }
 
-/* 仕様：カーソル持ってきた際の挙動 */
 .btn:hover{
     opacity: 0.8;
     transition: 0.2s;
@@ -124,4 +115,9 @@ header{
 .form__error{
     color: red;
     margin-top: 8px;
+}
+
+.form__error-item{
+    margin: 3px;
+    letter-spacing: 15%;
 }

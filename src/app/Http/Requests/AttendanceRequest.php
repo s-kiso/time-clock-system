@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
 
 class AttendanceRequest extends FormRequest
 {
@@ -26,11 +25,10 @@ class AttendanceRequest extends FormRequest
     {
         return [
             'clock_in' => 'required|before:clock_out',
-            'clock_out' => 'required|after:clock_in',
+            'clock_out' => 'required',
             'start.*' => 'after:clock_in',
-            // 'notes' => 'required',
-            
-            
+            'end.*' => 'before:clock_out',
+            'notes' => 'required',
         ];
 
     }
@@ -40,6 +38,8 @@ class AttendanceRequest extends FormRequest
         return [
             'clock_in.before' => '出勤時間もしくは退勤時間が不適切な値です',
             'start.*.after' => '休憩時間が勤務時間外です',
+            'end.*.before' => '休憩時間が勤務時間外です',
+            'notes.required' => '備考を記入してください',
         ];
     }
 }

@@ -2,9 +2,7 @@
 
 use App\Http\Controllers\AdminLoginController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RecordController;
-use App\Models\Record;
 use App\Http\Controllers\ListController;
 use App\Http\Controllers\AdminLogoutController;
 
@@ -39,10 +37,4 @@ Route::post('/admin/attendance/staff/{id}', [ListController::class, 'staff_detai
 Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [ListController::class, 'approve'])->name('modify.approve');
 Route::post('/stamp_correction_request/approve/{attendance_correct_request}', [ListController::class, 'approved'])->name('modify.approved');
 
-// Route::get('/attendance/{admin_id}', [ListController::class, 'detail'])->name('admin_record.detail');
-
-// Route::post('/admin/list', [AdminController::class, 'list']);
-
-// Route::middleware('auth')->group(function () {
-//     Route::get('/', [AuthController::class, 'index']);
-// });
+Route::post('/admin/attendance/staff/{id}/export', [ListController::class, 'staff_detail_export'])->name('staff.detail_export');

@@ -23,7 +23,6 @@
                 <th>メールアドレス</th>
                 <th>月次勤務</th>
             </tr>
-            
             <div class="list__table-record">
                 @foreach($user_information as $user_info)
                     <tr class="table__content">
@@ -33,11 +32,8 @@
                     </tr>
                 @endforeach
             </div>
-            
         </table>
-
     </div>
-    
 </div>
 
 

@@ -4,23 +4,19 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use app\http\Requests\AttendanceRequest;
 use App\Models\Record;
 use App\Models\User;
-use App\Models\Rest;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ListController extends Controller
 {
     public function list(Request $request)
     {
-        // 管理者権限の確認
-        // なぜかこれだけ一般ユーザーログインに飛ばされる
         if (!($this->isAdmin($request))) {
             return redirect('/admin/login');
         };
 
-        // 日付の取得・表示
         $date = session('date');
         if (isset($date)) {
             $now = $date;
@@ -31,7 +27,6 @@ class ListController extends Controller
         }
         $date_display = $now->isoFormat('YYYY年MM月DD日');
 
-        // 当日の勤怠情報の取得
         $year = $now->year;
         $month = $now->month;
         $day = $now->day;
@@ -42,73 +37,54 @@ class ListController extends Controller
         ])->get();
 
         foreach ($records as $loop => $record) {
-            // 社員情報の取得
             $user_info = $record->user;
             $record->user_name = $user_info->name;
 
             $rests = $record->rest;
             $rest_sum = 0;
             $work_sum = 0;
-            
+
             foreach ($rests as $rest_loop => $rest) {
-                //休憩中に一覧を見た際、endがないためif文で分ける必要がある？→今の時間までの休憩時間を表示？それともその前の休憩までの時間を表示？
-                // dd($rest_loop);
                 if ($rest_loop == 0) {
                     if (!isset($rest->end)) {
                         $record->rest_time = null;
                     } else {
-                        //文字列で保存されている休憩開始、終了時刻を再度Carbonに
                         $start_hour = new Carbon($date . "" . $rest->start);
                         $end_hour = new Carbon($date . "" . $rest->end);
-                        //分で休憩合計時間を算出
                         $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
-                        //分で求まった合計を時間と分に分ける
                         $rest_hour_sum = floor($rest_sum / 60);
                         $rest_minute_sum = $rest_sum % 60;
                         $rest_time = $rest_hour_sum . ':' . $rest_minute_sum;
-                        //strtotime関数で時間表示に
                         $rest_time = date('G:i', strtotime($rest_time));
-                        //$recordに休憩時間を追加
                         $record->rest_time = $rest_time;
                     }
                 } else {
                     if (!isset($rest->end)) {
                         $rest_sum = $rest_sum;
                     } else {
-                        //文字列で保存されている休憩開始、終了時刻を再度Carbonに
                         $start_hour = new Carbon($date . "" . $rest->start);
                         $end_hour = new Carbon($date . "" . $rest->end);
-                        //分で休憩合計時間を算出
                         $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
                     }
-                    //分で求まった合計を時間と分に分ける
                     $rest_hour_sum = floor($rest_sum / 60);
                     $rest_minute_sum = $rest_sum % 60;
                     $rest_time = $rest_hour_sum . ':' . $rest_minute_sum;
-                    //strtotime関数で時間表示に
                     $rest_time = date('G:i', strtotime($rest_time));
-                    //$recordに休憩時間を追加
                     $record->rest_time = $rest_time;
                 }
             }
 
-            //勤務合計時間も休憩合計時間と同様に計算、$recordに追加
             if (!isset($record->clock_out)) {
                 $record->work_time = null;
             } else {
-                //文字列で保存されている休憩開始、終了時刻を再度Carbonに
                 $start_hour = new Carbon($date . "" . $record->clock_in);
                 $end_hour = new Carbon($date . "" . $record->clock_out);
-                //分で勤務合計時間を算出
                 $work_sum = $start_hour->diffInMinutes($end_hour);
                 $work_sum = $work_sum - $rest_sum;
-                //分で求まった合計を時間と分に分ける
                 $work_hour_sum = floor($work_sum / 60);
                 $work_minute_sum = $work_sum % 60;
                 $work_time = $work_hour_sum . ':' . $work_minute_sum;
-                //strtotime関数で時間表示に
                 $work_time = date('G:i', strtotime($work_time));
-                //$recordに勤務時間を追加
                 $record->work_time = $work_time;
             }
         }
@@ -135,24 +111,21 @@ class ListController extends Controller
     }
 
     public function staff_list(Request $request){
-        // 管理者権限の確認
+
         if (!($this->isAdmin($request))) {
             return redirect('/admin/login');
         };
-
         $user_information = User::where('admin_check', null)->get();
-        
+
         return view('admin/staff', compact('user_information'));
     }
 
     public function staff_detail($id, Request $request){
 
-        // 管理者権限の確認
         if (!($this->isAdmin($request))) {
             return redirect('/admin/login');
         };
 
-        //sessionで受け取ったデータを消す必要があるかも？session_start, delete
         $year_month = session('year_month');
         if (isset($year_month)) {
             $year = intval(explode('-', $year_month)[0]);
@@ -178,82 +151,60 @@ class ListController extends Controller
             $rest_sum = 0;
             $work_sum = 0;
             $day = $record->day;
-            //文字列で保存されている休憩開始、終了時刻を再度Carbonにする際に日付を利用
             $date = $record->year . "-" . $record->month . "-" . $record->day;
-            // 日付をCarbon形式で表示するために$recordにdate列を追加
-            // $date_display = new Carbon($date);
-            // $record->date = $date_display->isoformat('MM/DD(ddd)');
-            //以下の処理、テーブルに保存する段階でやっておいたほうが良い？（restsテーブルに休憩時間合計列を追加する）
+
             foreach ($rests as $rest_loop => $rest) {
-                //休憩中に一覧を見た際、endがないためif文で分ける必要がある？→今の時間までの休憩時間を表示？それともその前の休憩までの時間を表示？
-                // dd($rest_loop);
+
                 if ($rest_loop == 0) {
                     if (!isset($rest->end)) {
                         $record->rest_time = null;
                     } else {
-                        //文字列で保存されている休憩開始、終了時刻を再度Carbonに
                         $start_hour = new Carbon($date . "" . $rest->start);
                         $end_hour = new Carbon($date . "" . $rest->end);
-                        //分で休憩合計時間を算出
                         $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
-                        //分で求まった合計を時間と分に分ける
                         $rest_hour_sum = floor($rest_sum / 60);
                         $rest_minute_sum = $rest_sum % 60;
                         $rest_time = $rest_hour_sum . ':' . $rest_minute_sum;
-                        //strtotime関数で時間表示に
                         $rest_time = date('G:i', strtotime($rest_time));
-                        //$recordに休憩時間を追加
                         $record->rest_time = $rest_time;
                     }
                 } else {
                     if (!isset($rest->end)) {
                         $rest_sum = $rest_sum;
                     } else {
-                        //文字列で保存されている休憩開始、終了時刻を再度Carbonに
                         $start_hour = new Carbon($date . "" . $rest->start);
                         $end_hour = new Carbon($date . "" . $rest->end);
-                        //分で休憩合計時間を算出
                         $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
                     }
-                    //分で求まった合計を時間と分に分ける
+
                     $rest_hour_sum = floor($rest_sum / 60);
                     $rest_minute_sum = $rest_sum % 60;
                     $rest_time = $rest_hour_sum . ':' . $rest_minute_sum;
-                    //strtotime関数で時間表示に
                     $rest_time = date('G:i', strtotime($rest_time));
-                    //$recordに休憩時間を追加
                     $record->rest_time = $rest_time;
                 }
             }
 
-            //勤務合計時間も休憩合計時間と同様に計算、$recordに追加
             if (!isset($record->clock_out)) {
                 $record->work_time = null;
             } else {
-                //文字列で保存されている休憩開始、終了時刻を再度Carbonに
                 $start_hour = new Carbon($date . "" . $record->clock_in);
                 $end_hour = new Carbon($date . "" . $record->clock_out);
-                //分で勤務合計時間を算出
                 $work_sum = $start_hour->diffInMinutes($end_hour);
                 $work_sum = $work_sum - $rest_sum;
-                //分で求まった合計を時間と分に分ける
                 $work_hour_sum = floor($work_sum / 60);
                 $work_minute_sum = $work_sum % 60;
                 $work_time = $work_hour_sum . ':' . $work_minute_sum;
-                //strtotime関数で時間表示に
                 $work_time = date('G:i', strtotime($work_time));
-                //$recordに勤務時間を追加
                 $record->work_time = $work_time;
             }
-            // $records[日付]という形にする
+
             $records[$day] = $record;
-            // 元の$recordを削除
             $records->pull($loop);
         }
 
         $get_days = new Carbon($year_month);
         $days = $get_days->daysInMonth;
-        //繰り返し使って06/01~30までのデータを作り、$date(日付)に入れてcompactで渡してやりたい
         $date_month = [];
         for ($i = 1; $i <= $days; $i++) {
             $date_display = new Carbon($year_month . '-' . $i);
@@ -267,7 +218,6 @@ class ListController extends Controller
 
     public function staff_detail_post(Request $request)
     {
-        // 管理者権限の確認
         if (!($this->isAdmin($request))) {
             return redirect('/admin/login');
         };
@@ -285,19 +235,134 @@ class ListController extends Controller
         return redirect()->route('staff.detail', ['id'=>$id])->with(compact('year_month'));
     }
 
+    public function staff_detail_export(Request $request)
+    {
+        $now_month = new Carbon(str_replace('/', '-', $request->input('now')));
+        $id = $request->input('user_id');
+        $year = intval(explode('-', $now_month)[0]);
+        $month = intval(explode('-', $now_month)[1]);
+        $year_month = $year . "-" . $month;
+
+        $user_id = $id;
+        // $user_info = User::find($user_id);
+
+        $records = Record::where([
+            ['user_id', $user_id],
+            ['year', $year],
+            ['month', $month],
+        ])->get();
+
+        $get_days = new Carbon($year_month);
+        $days = $get_days->daysInMonth;
+        $export_records = [];
+
+        for ($i = 1; $i <= $days; $i++) {
+            $date_display = new Carbon($year_month . '-' . $i);
+            $date_display = $date_display->isoformat('MM/DD(ddd)');
+            $export_records[$i]['date'] = $date_display;
+        }
+
+        foreach ($records as $loop => $record) {
+            $rests = $record->rest;
+            $rest_sum = 0;
+            $work_sum = 0;
+            $day = $record->day;
+            $date = $record->year . "-" . $record->month . "-" . $record->day;
+
+            if (!isset($record->clock_out)) {
+                $work_time = null;
+                $export_records[$day]['work_time'] = null;
+            } else {
+                $start_hour = new Carbon($date . "" . $record->clock_in);
+                $end_hour = new Carbon($date . "" . $record->clock_out);
+                $work_sum = $start_hour->diffInMinutes($end_hour);
+                $work_sum = $work_sum - $rest_sum;
+                $work_hour_sum = floor($work_sum / 60);
+                $work_minute_sum = $work_sum % 60;
+                $work_time = $work_hour_sum . ':' . $work_minute_sum;
+                $work_time = date('G:i', strtotime($work_time));
+                $export_records[$day]['clock_in'] = substr($record->clock_in, 0, 5);
+                $export_records[$day]['clock_out'] = substr($record->clock_out, 0, 5);
+            }
+
+            foreach ($rests as $rest_loop => $rest) {
+                if ($rest_loop == 0) {
+                    if (!isset($rest->end)) {
+                        $export_records[$day]['rest_time'] = null;
+                    } else {
+                        $start_hour = new Carbon($date . "" . $rest->start);
+                        $end_hour = new Carbon($date . "" . $rest->end);
+                        $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
+                        $rest_hour_sum = floor($rest_sum / 60);
+                        $rest_minute_sum = $rest_sum % 60;
+                        $rest_time = $rest_hour_sum . ':' . $rest_minute_sum;
+                        $rest_time = date('G:i', strtotime($rest_time));
+                        $export_records[$day]['rest_time'] = $rest_time;
+                    }
+                } else {
+                    if (!isset($rest->end)) {
+                        $rest_sum = $rest_sum;
+                    } else {
+                        $start_hour = new Carbon($date . "" . $rest->start);
+                        $end_hour = new Carbon($date . "" . $rest->end);
+                        $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
+                    }
+
+                    $rest_hour_sum = floor($rest_sum / 60);
+                    $rest_minute_sum = $rest_sum % 60;
+                    $rest_time = $rest_hour_sum . ':' . $rest_minute_sum;
+                    $rest_time = date('G:i', strtotime($rest_time));
+                    $export_records[$day]['rest_time'] = $rest_time;
+                }
+            }
+
+            $records[$day] = $record;
+            $records->pull($loop);
+            $export_records[$day]['work_time'] = $work_time;
+        }
+
+        
+        $csv_header = ['日付', '出勤', '退勤', '合計'];
+
+        $csv_content = fopen('php://temp', 'r+');
+        fputcsv($csv_content, $csv_header);
+        foreach ($export_records as $export_record) {
+            fputcsv($csv_content, $export_record);
+        }
+        rewind($csv_content);
+        $csv_data = stream_get_contents($csv_content);
+        $sjis_data = mb_convert_encoding($csv_data, 'SJIS-win', 'UTF-8');
+        fclose($csv_content);
+        
+        return Response::make($sjis_data, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="record.csv',
+        ]);
+
+
+
+        // $get_days = new Carbon($year_month);
+        // $days = $get_days->daysInMonth;
+        // $date_month = [];
+        // for ($i = 1; $i <= $days; $i++) {
+        //     $date_display = new Carbon($year_month . '-' . $i);
+        //     $date_display = $date_display->isoformat('MM/DD(ddd)');
+        //     $date_month[$i] = $date_display;
+        // }
+        // $year_month = $get_days->format('Y/m');
+        return $response;
+    }
+
     public function approve($attendance_correct_request)
     {
         $record = Record::find($attendance_correct_request);
-        
         $user = $record->user;
         $original_id = $record->id;
-        // $now_user = Auth::user();
 
         $modify_request = $record->modify_request;
         $status = $modify_request->status;
         $rests = $modify_request->modify_request_rest;
         $record = $modify_request;
-        // dd($rests);
 
         return view('admin/approve', compact('record', 'rests', 'user', 'status', 'original_id'));
     }
@@ -319,7 +384,6 @@ class ListController extends Controller
 
     private function isAdmin(Request $request) {
         $user = $request->user();
-        // dd(isset($user) && $user->admin_check);
         if (!(isset($user) && $user->admin_check)) {
             return false;
         }

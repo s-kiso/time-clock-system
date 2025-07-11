@@ -22,7 +22,6 @@ class AdminLoginController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
 
-        // attemptメソッドは入力したパスワード($password)を自動的にハッシュして比較する
         if(Auth::attempt(['email' => $email, 'password' => $password, 'admin_check' => 1])){
             $request->session()->regenerate();
             return redirect()->intended('/admin/attendance/list');

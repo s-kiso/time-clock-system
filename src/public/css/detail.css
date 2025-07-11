@@ -5,7 +5,6 @@ input, textarea, select, button{
 .main{
     background-color: #F0EFF2;
     padding: 80px 0;
-    height: 100vh;
 }
 
 .page__title{
@@ -27,7 +26,6 @@ input, textarea, select, button{
     background-color: #FFFFFF;
     border-radius: 10px;
     margin-top: 30px;
-    /* table-layout: fixed; */
 }
 
 .detail__table tr{
@@ -72,18 +70,51 @@ input, textarea, select, button{
     letter-spacing: 1.5px;
     color: #000000;
     position: relative;
+    border: 1px solid #E1E1E1;
 }
-  
+
 .table__content-time::-webkit-calendar-picker-indicator {
     position: absolute;
     opacity: 0;
+}
+
+/* 備考欄の行のみtdの幅を変えたいがうまくいかない */
+/* .table__remarks{
+    display: table;
+    width: 100%;
+} */
+
+.table__remarks-header{
+    color: #737373;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 15px 0 15px 15px;
+    text-align: left;
+    vertical-align: middle;
+    width: 25%;
+}
+
+.table__remarks-content{
+    color: #000000;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 5px 0;
+    /* text-align: center; */
+    /* width: 75%; */
+}
+
+.table__remarks-input{
+    width: 100%;
+    border: 1px solid #D9D9D9;
+    height: 70px;
 }
 
 .form__submit-button{
     display: flex;
     justify-content: flex-end;
     margin-top: 20px;
-    
 }
 
 .form__submit-button button{
@@ -119,3 +150,4 @@ input, textarea, select, button{
     text-align: center;
     line-height: 40px;
 }
+

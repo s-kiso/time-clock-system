@@ -21,7 +21,6 @@
     <div class="contents">
         <h1 class="page__title">勤怠詳細</h1>
 
-        {{-- action未入力 --}}
         <form action="{{ route('record.modify', ['id'=>$original_id]) }}" method="post" >
         @csrf
             <table class="detail__table">
@@ -47,13 +46,7 @@
                         <td class="table__content"><input type="time" value="{{ substr($record->clock_out, 0, 5) }}" name="clock_out" class="table__content-time"></td>
                     @endif
                 </tr>
-                <div class="form__error">
-                    @error('clock_in')
-                    <tr>{{ $message }}</tr>
-                    @enderror
-                </div>
 
-                {{-- 休憩は+1回分出す --}}
                 @if($status == 1 || $status == 2)
                     @if(!($rests->isEmpty()))
                         @foreach($rests as $rest)
@@ -71,7 +64,6 @@
                                 </tr>
                             @endforeach
                     @endif
-                        
                 @else
                     @if($rests->isEmpty())
                         <tr class="table__time">
@@ -109,44 +101,33 @@
                 @endif
 
                 <tr class="table__remarks">
-                    <th class="table__header">備考</th>
+                    <th class="table__remarks-header">備考</th>
                     @if($status == 1 || $status == 2)
-                        <td class="table__content">{{ $record->notes }}</td>
+                        <td class="table__remarks-content">{{ $record->notes }}</td>
                     @else
-                        <td class="table__content"><input type="text"  name="notes"></td>
+                        <td class="table__remarks-content"><textarea name="notes" class="table__remarks-input"></textarea></td>
                     @endif
                 </tr>
-
             </table>
 
             <div class="form__error">
-                @error('notes')
-                {{ $message }}
-                @enderror
-            </div>
-
-            <div class="form__error">
-                @error('clock_in.required')
-                <tr>{{ $message }}</tr>
-                @enderror
-            </div>
-
-            <div class="form__error">
+                <ul>
                 @error('clock_in.before')
-                <tr>{{ $message }}</tr>
+                    <li class="form__error-item">{{ $message }}</li>
                 @enderror
-            </div>
-
-    @php
-        dump($errors)
-    @endphp
-            <div class="form__error">
                 @error('start.*')
-                <tr>{{ $message }}</tr>
+                    <li class="form__error-item">{{ $message }}</li>
                 @enderror
+                @if(!($errors->has('start.*')))
+                    @if($errors->has('end.*'))
+                        <li class="form__error-item">{{ $errors->first('end.*') }}</li>
+                    @endif
+                @endif
+                @error('notes')
+                    <li class="form__error-item">{{ $message }}</li>
+                @enderror
+                </ul>
             </div>
-        
-
 
             <div class=form__submit-button>
                 @if($status == 1)
@@ -158,10 +139,7 @@
                 @endif
             </div>
         </form>
-
     </div>
-    
 </div>
-
 
 @endsection

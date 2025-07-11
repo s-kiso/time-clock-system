@@ -33,8 +33,6 @@
     font-weight: 700;
 }
 
-/* 画像を中央に持ってくる方法 */
-
 .list__header-previous img{
     width: 20px;
     height: 100%;
@@ -101,3 +99,20 @@
     color: #000000;
 }
 
+.form__submit-button{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.form__submit-button button{
+    color: #FFFFFF;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background-color: #000000;
+    border-radius: 5px;
+    padding: 5px 10px;
+    height: 50px;
+    width: 130px;
+}

@@ -16,7 +16,6 @@ class CreateModifyRequestRestsTable extends Migration
         Schema::create('modify_request_rests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('modify_request_id');
-            // $table->foreignId('record_id');
             $table->time('start');
             $table->time('end');
             $table->timestamps();

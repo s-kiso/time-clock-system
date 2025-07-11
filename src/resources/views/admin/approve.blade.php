@@ -17,7 +17,6 @@
     <div class="contents">
         <h1 class="page__title">勤怠詳細</h1>
 
-        {{-- action未入力 --}}
         <form action="{{ route('modify.approved', ['attendance_correct_request'=>$original_id]) }}" method="post" >
         @csrf
             <table class="detail__table">
@@ -37,7 +36,6 @@
                     <td class="table__content-wave">～</td>
                     <td class="table__content">{{ substr($record->clock_out, 0, 5) }}</td>
                 </tr>
-
                 @if(!($rests->isEmpty()))
                     @foreach($rests as $rest)
                             <tr class="table__time">
@@ -54,12 +52,10 @@
                             </tr>
                         @endforeach
                 @endif
-                        
                 <tr class="table__remarks">
                     <th class="table__header">備考</th>
                     <td class="table__content">{{ $record->notes }}</td>
                 </tr>
-
             </table>
 
             <div class=form__submit-button>
@@ -70,9 +66,7 @@
                 @endif
             </div>
         </form>
-
     </div>
-    
 </div>
 
 

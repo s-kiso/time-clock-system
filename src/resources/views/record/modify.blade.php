@@ -24,13 +24,13 @@
         <div class="list__header">
         @if($done_check == true)
             <h2 class="list__header-regular"><a href="/stamp_correction_request/list">承認待ち</a></h2>
-            <h2 class="list__header-bold"><a href="/stamp_correction_request/list?done=true">承認済み</a></h2>    
+            <h2 class="list__header-bold"><a href="/stamp_correction_request/list?done=true">承認済み</a></h2>
         @else
             <h2 class="list__header-bold"><a href="/stamp_correction_request/list">承認待ち</a></h2>
-            <h2 class="list__header-regular"><a href="/stamp_correction_request/list?done=true">承認済み</a></h2>    
+            <h2 class="list__header-regular"><a href="/stamp_correction_request/list?done=true">承認済み</a></h2>
         @endif
         </div>
-        
+
         <table class="list__table">
             <tr class="table__header">
                 <th>状態</th>
@@ -40,7 +40,7 @@
                 <th>申請日時</th>
                 <th>詳細</th>
             </tr>
-        
+
             <div class="list__table-record">
                 @foreach($modify_requests as $modify_request)
                     <tr class="table__content">
@@ -64,11 +64,8 @@
                     </tr>
                 @endforeach
             </div>
-            
         </table>
-
     </div>
-    
 </div>
 
 

@@ -6,7 +6,6 @@
     @if(Auth::check())
     <nav class="header__nav">
         <ul>
-            <!-- 退勤後分ける処理を書く必要あり -->
             <li><a href="/attendance">勤怠</a></li>
             <li><a href="/attendance/list">勤怠一覧</a></li>
             <li><a href="/stamp_correction_request/list">申請</a></li>
