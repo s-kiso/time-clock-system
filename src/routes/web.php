@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RecordController;
 use App\Http\Controllers\ListController;
 use App\Http\Controllers\AdminLogoutController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,12 +19,12 @@ use App\Http\Controllers\AdminLogoutController;
 |
 */
 
-Route::get('/attendance', [RecordController::class, 'attendance'])->name('attendance_home')->middleware('auth');
-Route::post('/attendance', [RecordController::class, 'attended'])->middleware('auth');
-Route::post('/rest', [RecordController::class, 'rest'])->middleware('auth');
-Route::get('/attendance/list', [RecordController::class, 'list'])->name('list_home')->middleware('auth');
+Route::get('/attendance', [RecordController::class, 'attendance'])->name('attendance_home')->middleware(['auth', 'verified']);
+Route::post('/attendance', [RecordController::class, 'attended'])->middleware(['auth', 'verified']);
+Route::post('/rest', [RecordController::class, 'rest'])->middleware(['auth', 'verified']);
+Route::get('/attendance/list', [RecordController::class, 'list'])->name('list_home')->middleware(['auth', 'verified']);
 Route::post('/attendance/list', [RecordController::class, 'listed']);
-Route::get('/attendance/{id}', [RecordController::class, 'detail'])->name('record.detail')->middleware('auth');
+Route::get('/attendance/{id}', [RecordController::class, 'detail'])->name('record.detail')->middleware(['auth', 'verified']);
 Route::post('/attendance/{id}', [RecordController::class, 'detailed'])->name('record.modify');
 Route::get('/stamp_correction_request/list', [RecordController::class, 'apply']);
 
@@ -38,3 +40,17 @@ Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [Li
 Route::post('/stamp_correction_request/approve/{attendance_correct_request}', [ListController::class, 'approved'])->name('modify.approved');
 
 Route::post('/admin/attendance/staff/{id}/export', [ListController::class, 'staff_detail_export'])->name('staff.detail_export');
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+
+    return redirect('/attendance');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');

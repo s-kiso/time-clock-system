@@ -259,6 +259,10 @@ class ListController extends Controller
             $date_display = new Carbon($year_month . '-' . $i);
             $date_display = $date_display->isoformat('MM/DD(ddd)');
             $export_records[$i]['date'] = $date_display;
+            $export_records[$i]['clock_in'] = null;
+            $export_records[$i]['clock_out'] = null;
+            $export_records[$i]['rest_time'] = null;
+            $export_records[$i]['work_time'] = null;
         }
 
         foreach ($records as $loop => $record) {
@@ -287,7 +291,7 @@ class ListController extends Controller
             foreach ($rests as $rest_loop => $rest) {
                 if ($rest_loop == 0) {
                     if (!isset($rest->end)) {
-                        $export_records[$day]['rest_time'] = null;
+                        $export_records[$day]['rest_time'] = "0:00";
                     } else {
                         $start_hour = new Carbon($date . "" . $rest->start);
                         $end_hour = new Carbon($date . "" . $rest->end);
@@ -318,10 +322,10 @@ class ListController extends Controller
             $records[$day] = $record;
             $records->pull($loop);
             $export_records[$day]['work_time'] = $work_time;
+            
         }
 
-
-        $csv_header = ['日付', '出勤', '退勤', '合計'];
+        $csv_header = ['日付', '出勤', '退勤', '休憩', '合計'];
 
         $csv_content = fopen('php://temp', 'r+');
         fputcsv($csv_content, $csv_header);
