@@ -1,7 +1,7 @@
 @extends('layouts.default')
 
 <!-- タイトル -->
-@section('title', '管理者勤怠一覧')
+@section('title', 'スタッフ別勤怠一覧')
 
 <!-- css読み込み -->
 @section('css')

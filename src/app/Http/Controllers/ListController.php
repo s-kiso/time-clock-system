@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Record;
 use App\Models\User;
 use Illuminate\Support\Facades\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ListController extends Controller
 {
@@ -321,7 +320,7 @@ class ListController extends Controller
             $export_records[$day]['work_time'] = $work_time;
         }
 
-        
+
         $csv_header = ['日付', '出勤', '退勤', '合計'];
 
         $csv_content = fopen('php://temp', 'r+');
@@ -333,23 +332,11 @@ class ListController extends Controller
         $csv_data = stream_get_contents($csv_content);
         $sjis_data = mb_convert_encoding($csv_data, 'SJIS-win', 'UTF-8');
         fclose($csv_content);
-        
+
         return Response::make($sjis_data, 200, [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="record.csv',
         ]);
-
-
-
-        // $get_days = new Carbon($year_month);
-        // $days = $get_days->daysInMonth;
-        // $date_month = [];
-        // for ($i = 1; $i <= $days; $i++) {
-        //     $date_display = new Carbon($year_month . '-' . $i);
-        //     $date_display = $date_display->isoformat('MM/DD(ddd)');
-        //     $date_month[$i] = $date_display;
-        // }
-        // $year_month = $get_days->format('Y/m');
         return $response;
     }
 
