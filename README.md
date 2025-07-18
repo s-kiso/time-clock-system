@@ -11,7 +11,7 @@
   <li>docker-compose exec php bash</li>
   <li>composer install</li>
   <li>cp .env.example .env</li>
-  <li>作成したenvファイル内を下記の通り修正
+  <li>作成した.envファイル内を下記の通り修正
     <ul>
       <li>DB_HOST=mysql</li>
       <li>DB_DATABASE=laravel_db</li>
@@ -26,17 +26,45 @@
 </ol>
 
 <h3>メール認証</h3>
-<p>mailtrapというツールを使用しています。
-以下のリンクから会員登録をしてください。　
-https://mailtrap.io/
-
-メールボックスのIntegrationsから 「laravel 7.x and 8.x」を選択し、　
-.envファイルのMAIL_MAILERからMAIL_ENCRYPTIONまでの項目をコピー＆ペーストしてください。　
-MAIL_FROM_ADDRESSは任意のメールアドレスを入力してください。　</p>
-
+<p>mailhogを使用しています。.envファイルを以下の通り修正してください。</p>
+<ul>
+  <li>MAIL_HOSt=mailhog</li>
+  <li>MAIL_PORT=1025</li>
+  <li>MAIL_FROM_ADDRESSに任意のアドレスを入力</li>
+</ul>
+  
 <h3>テストアカウント</h3>
 <h4>管理者ユーザ</h4>
+<ul>
+  <li>name: 管理者ユーザー1</li>
+  <li>email: admin1@example.com</li>
+  <li>password: password</li>
+</ul>
+
 <h4>一般ユーザ</h4>
+<ol>
+  <li>管理者ユーザー1</li>
+  <ul>
+    <li>name: 管理者ユーザー1</li>
+    <li>email: admin1@example.com</li>
+    <li>password: password</li>
+  </ul>
+  <li>一般ユーザー1</li>
+  <ul>
+    <li>name: 一般ユーザー1</li>
+    <li>email: general1@example.com</li>
+    <li>password: password</li>
+    <li>10件の出退勤データあり（6月2件、7月8件）</li>
+  </ul>
+  <li>一般ユーザー2</li>
+  <ul>
+    <li>name: 一般ユーザー2</li>
+    <li>email: general2@example.com</li>
+    <li>password: password</li>
+    <li>出退勤・休憩データなし</li>
+  </ul>
+</ol>
+
 
 <h3>使用技術</h3>
 <ul>
@@ -51,9 +79,5 @@ MAIL_FROM_ADDRESSは任意のメールアドレスを入力してください。
 <ul>
   <li>開発環境: http://localhost/</li>
   <li>phpMyAdmin: http://localhost:8080/</li>
-</ul>
-
-<h3>備考</h3>
-<ul>
-  <li>会員登録・ログイン機能以外はほぼできていないです</li>
+  <li>mailhog: http://localhost:8025/</li>
 </ul>
