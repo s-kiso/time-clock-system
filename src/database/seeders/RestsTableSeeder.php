@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Rest;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class RestsTableSeeder extends Seeder
 {
@@ -19,6 +19,6 @@ class RestsTableSeeder extends Seeder
             'start' => '12:00',
             'end' => '13:00',
         ];
-        DB::table('rests')->insert($param);
+        Rest::create($param);
     }
 }

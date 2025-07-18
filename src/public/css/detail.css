@@ -5,6 +5,7 @@ input, textarea, select, button{
 .main{
     background-color: #F0EFF2;
     padding: 80px 0;
+    height: 100%;
 }
 
 .page__title{
@@ -77,12 +78,6 @@ input, textarea, select, button{
     position: absolute;
     opacity: 0;
 }
-
-/* 備考欄の行のみtdの幅を変えたいがうまくいかない */
-/* .table__remarks{
-    display: table;
-    width: 100%;
-} */
 
 .table__remarks-header{
     color: #737373;

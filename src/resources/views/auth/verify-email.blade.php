@@ -25,8 +25,7 @@
             新規認証メールを再送信しました！
         </p>
         @endif
-        <form class="mail_verify--link" method="POST" action="">
-            @csrf
+        <form class="mail_verify--link" method="GET" action="http://localhost:8025">
             <input type="submit" class="mail_verify--button" value="認証はこちらから">
         </form>
 

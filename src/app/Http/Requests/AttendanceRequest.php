@@ -26,8 +26,8 @@ class AttendanceRequest extends FormRequest
         return [
             'clock_in' => 'required|before:clock_out',
             'clock_out' => 'required',
-            'start.*' => 'after:clock_in',
-            'end.*' => 'before:clock_out',
+            'start.*' => 'nullable|after:clock_in',
+            'end.*' => 'nullable|before:clock_out',
             'notes' => 'required',
         ];
 

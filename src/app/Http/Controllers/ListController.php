@@ -139,13 +139,14 @@ class ListController extends Controller
         $user_id = $id;
         $user_info = User::find($user_id);
 
-        $records = Record::where([
+        $records_origin = Record::where([
             ['user_id', $user_id],
             ['year', $year],
             ['month', $month],
         ])->get();
+        $records = collect();
 
-        foreach ($records as $loop => $record) {
+        foreach ($records_origin as $loop => $record) {
             $rests = $record->rest;
             $rest_sum = 0;
             $work_sum = 0;
@@ -199,7 +200,6 @@ class ListController extends Controller
             }
 
             $records[$day] = $record;
-            $records->pull($loop);
         }
 
         $get_days = new Carbon($year_month);
@@ -243,9 +243,7 @@ class ListController extends Controller
         $year_month = $year . "-" . $month;
 
         $user_id = $id;
-        // $user_info = User::find($user_id);
-
-        $records = Record::where([
+        $records_origin = Record::where([
             ['user_id', $user_id],
             ['year', $year],
             ['month', $month],
@@ -254,6 +252,7 @@ class ListController extends Controller
         $get_days = new Carbon($year_month);
         $days = $get_days->daysInMonth;
         $export_records = [];
+        $records = collect();
 
         for ($i = 1; $i <= $days; $i++) {
             $date_display = new Carbon($year_month . '-' . $i);
@@ -265,7 +264,7 @@ class ListController extends Controller
             $export_records[$i]['work_time'] = null;
         }
 
-        foreach ($records as $loop => $record) {
+        foreach ($records_origin as $loop => $record) {
             $rests = $record->rest;
             $rest_sum = 0;
             $work_sum = 0;
@@ -320,9 +319,7 @@ class ListController extends Controller
             }
 
             $records[$day] = $record;
-            $records->pull($loop);
             $export_records[$day]['work_time'] = $work_time;
-            
         }
 
         $csv_header = ['日付', '出勤', '退勤', '休憩', '合計'];

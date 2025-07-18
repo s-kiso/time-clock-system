@@ -107,13 +107,14 @@ class RecordController extends Controller
         }
         $year_month = $year . "-" . $month;
         $user_id = auth()->id();
-        $records = Record::where([
+        $records_origin = Record::where([
             ['user_id', $user_id],
             ['year', $year],
             ['month', $month],
         ])->get();
+        $records = collect();
 
-        foreach($records as $loop => $record){
+        foreach($records_origin as $loop => $record){
             $rests = $record->rest;
             $rest_sum = 0;
             $work_sum = 0;
@@ -165,7 +166,6 @@ class RecordController extends Controller
                 $record->work_time = $work_time;
             }
             $records[$day] = $record;
-            $records->pull($loop);
         }
 
         $get_days = new Carbon($year_month);
