@@ -54,7 +54,7 @@
     <li>name: 一般ユーザー1</li>
     <li>email: general1@example.com</li>
     <li>password: password</li>
-    <li>10件の出退勤データあり（6月2件、7月8件）</li>
+    <li>10件の出退勤データ（6月2件、7月8件）、9件の休憩データあり</li>
   </ul>
   <li>一般ユーザー2</li>
   <ul>
