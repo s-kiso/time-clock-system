@@ -48,8 +48,8 @@ class ListController extends Controller
                     if (!isset($rest->end)) {
                         $record->rest_time = null;
                     } else {
-                        $start_hour = new Carbon($date . "" . $rest->start);
-                        $end_hour = new Carbon($date . "" . $rest->end);
+                        $start_hour = new Carbon($date . " " . $rest->start);
+                        $end_hour = new Carbon($date . " " . $rest->end);
                         $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
                         $rest_hour_sum = floor($rest_sum / 60);
                         $rest_minute_sum = $rest_sum % 60;
@@ -61,8 +61,8 @@ class ListController extends Controller
                     if (!isset($rest->end)) {
                         $rest_sum = $rest_sum;
                     } else {
-                        $start_hour = new Carbon($date . "" . $rest->start);
-                        $end_hour = new Carbon($date . "" . $rest->end);
+                        $start_hour = new Carbon($date . " " . $rest->start);
+                        $end_hour = new Carbon($date . " " . $rest->end);
                         $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
                     }
                     $rest_hour_sum = floor($rest_sum / 60);
@@ -76,8 +76,8 @@ class ListController extends Controller
             if (!isset($record->clock_out)) {
                 $record->work_time = null;
             } else {
-                $start_hour = new Carbon($date . "" . $record->clock_in);
-                $end_hour = new Carbon($date . "" . $record->clock_out);
+                $start_hour = new Carbon($date . " " . $record->clock_in);
+                $end_hour = new Carbon($date . " " . $record->clock_out);
                 $work_sum = $start_hour->diffInMinutes($end_hour);
                 $work_sum = $work_sum - $rest_sum;
                 $work_hour_sum = floor($work_sum / 60);
@@ -158,8 +158,8 @@ class ListController extends Controller
                     if (!isset($rest->end)) {
                         $record->rest_time = null;
                     } else {
-                        $start_hour = new Carbon($date . "" . $rest->start);
-                        $end_hour = new Carbon($date . "" . $rest->end);
+                        $start_hour = new Carbon($date . " " . $rest->start);
+                        $end_hour = new Carbon($date . " " . $rest->end);
                         $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
                         $rest_hour_sum = floor($rest_sum / 60);
                         $rest_minute_sum = $rest_sum % 60;
@@ -171,8 +171,8 @@ class ListController extends Controller
                     if (!isset($rest->end)) {
                         $rest_sum = $rest_sum;
                     } else {
-                        $start_hour = new Carbon($date . "" . $rest->start);
-                        $end_hour = new Carbon($date . "" . $rest->end);
+                        $start_hour = new Carbon($date . " " . $rest->start);
+                        $end_hour = new Carbon($date . " " . $rest->end);
                         $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
                     }
 
@@ -187,8 +187,8 @@ class ListController extends Controller
             if (!isset($record->clock_out)) {
                 $record->work_time = null;
             } else {
-                $start_hour = new Carbon($date . "" . $record->clock_in);
-                $end_hour = new Carbon($date . "" . $record->clock_out);
+                $start_hour = new Carbon($date . " " . $record->clock_in);
+                $end_hour = new Carbon($date . " " . $record->clock_out);
                 $work_sum = $start_hour->diffInMinutes($end_hour);
                 $work_sum = $work_sum - $rest_sum;
                 $work_hour_sum = floor($work_sum / 60);
@@ -276,8 +276,8 @@ class ListController extends Controller
                 $work_time = null;
                 $export_records[$day]['work_time'] = null;
             } else {
-                $start_hour = new Carbon($date . "" . $record->clock_in);
-                $end_hour = new Carbon($date . "" . $record->clock_out);
+                $start_hour = new Carbon($date . " " . $record->clock_in);
+                $end_hour = new Carbon($date . " " . $record->clock_out);
                 $work_sum = $start_hour->diffInMinutes($end_hour);
                 $work_sum = $work_sum - $rest_sum;
                 $work_hour_sum = floor($work_sum / 60);
@@ -293,8 +293,8 @@ class ListController extends Controller
                     if (!isset($rest->end)) {
                         $export_records[$day]['rest_time'] = "0:00";
                     } else {
-                        $start_hour = new Carbon($date . "" . $rest->start);
-                        $end_hour = new Carbon($date . "" . $rest->end);
+                        $start_hour = new Carbon($date . " " . $rest->start);
+                        $end_hour = new Carbon($date . " " . $rest->end);
                         $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
                         $rest_hour_sum = floor($rest_sum / 60);
                         $rest_minute_sum = $rest_sum % 60;
@@ -306,8 +306,8 @@ class ListController extends Controller
                     if (!isset($rest->end)) {
                         $rest_sum = $rest_sum;
                     } else {
-                        $start_hour = new Carbon($date . "" . $rest->start);
-                        $end_hour = new Carbon($date . "" . $rest->end);
+                        $start_hour = new Carbon($date . " " . $rest->start);
+                        $end_hour = new Carbon($date . " " . $rest->end);
                         $rest_sum = $rest_sum + $start_hour->diffInMinutes($end_hour);
                     }
 

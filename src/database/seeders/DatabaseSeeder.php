@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(AdminTableSeeder::class);
+        $this->call(UsersTableSeeder::class);
+        $this->call(RecordsTableSeeder::class);
+        $this->call(RestsTableSeeder::class);
     }
 }
