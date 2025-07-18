@@ -26,7 +26,7 @@ Route::get('/attendance/list', [RecordController::class, 'list'])->name('list_ho
 Route::post('/attendance/list', [RecordController::class, 'listed']);
 Route::get('/attendance/{id}', [RecordController::class, 'detail'])->name('record.detail')->middleware(['auth', 'verified']);
 Route::post('/attendance/{id}', [RecordController::class, 'detailed'])->name('record.modify');
-Route::get('/stamp_correction_request/list', [RecordController::class, 'apply']);
+Route::get('/stamp_correction_request/list', [RecordController::class, 'apply'])->middleware('auth', 'verified');
 
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin_login_show');
 Route::post('/admin/login', [AdminLoginController::class, 'login']);
