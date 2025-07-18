@@ -16,7 +16,7 @@ class RecordController extends Controller
     public function attendance()
     {
         $now = Carbon::now();
-        $date = $now->isoFormat('YYYY年MM月DD日(ddd)');
+        $date = $now->isoFormat('YYYY年M月DD日(ddd)');
         $time = $now->isoFormat('HH:mm');
         $compare_date = [$now->year, $now->month, $now->day];
         $user_id = auth()->id();
@@ -115,7 +115,22 @@ class RecordController extends Controller
         $records = collect();
 
         foreach($records_origin as $loop => $record){
-            $rests = $record->rest;
+
+            $modify_request = $record->modify_request;
+            if ($modify_request != null) {
+                $status = $modify_request->status;
+                if($status == 2){
+                    $rests = $modify_request->modify_request_rest;
+                    $record = $modify_request;
+                    $record->id = $record->record_id;
+                } else {
+                    $rests = $record->rest;
+                }
+            } else {
+                $status = null;
+                $rests = $record->rest;
+            }
+
             $rest_sum = 0;
             $work_sum = 0;
             $day = $record->day;

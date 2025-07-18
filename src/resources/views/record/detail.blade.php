@@ -112,7 +112,7 @@
 
             <div class="form__error">
                 <ul>
-                @error('clock_in.before')
+                @error('clock_in')
                     <li class="form__error-item">{{ $message }}</li>
                 @enderror
                 @error('start.*')

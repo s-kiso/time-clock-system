@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\AdminLoginRequest;
 use Illuminate\Support\Facades\Auth;
 
 class AdminLoginController extends Controller
@@ -17,7 +17,7 @@ class AdminLoginController extends Controller
         return view('admin/login');
     }
 
-    public function login(Request $request)
+    public function login(AdminLoginRequest $request)
     {
         $email = $request->input('email');
         $password = $request->input('password');
@@ -28,8 +28,8 @@ class AdminLoginController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'ログイン情報が登録されていません'
-        ])->onlyInput('email');
+            'email' => 'ログイン情報が登録されていません',
+        ]);
     }
 
 }

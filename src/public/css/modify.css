@@ -1,7 +1,7 @@
 .main{
     background-color: #F0EFF2;
     padding: 80px 0;
-    height: 100vh;
+    height: 100%;
 }
 
 .page__title{
@@ -15,6 +15,7 @@
 
 .contents{
     width: 60%;
+    height: 100%;
     margin: 0 auto;
 }
 

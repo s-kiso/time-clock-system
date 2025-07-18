@@ -39,7 +39,21 @@ class ListController extends Controller
             $user_info = $record->user;
             $record->user_name = $user_info->name;
 
-            $rests = $record->rest;
+            $modify_request = $record->modify_request;
+            if ($modify_request != null) {
+                $status = $modify_request->status;
+                if ($status == 2) {
+                    $rests = $modify_request->modify_request_rest;
+                    $record = $modify_request;
+                    $record->id = $record->record_id;
+                } else {
+                    $rests = $record->rest;
+                }
+            } else {
+                $status = null;
+                $rests = $record->rest;
+            }
+
             $rest_sum = 0;
             $work_sum = 0;
 
@@ -147,7 +161,22 @@ class ListController extends Controller
         $records = collect();
 
         foreach ($records_origin as $loop => $record) {
-            $rests = $record->rest;
+
+            $modify_request = $record->modify_request;
+            if ($modify_request != null) {
+                $status = $modify_request->status;
+                if ($status == 2) {
+                    $rests = $modify_request->modify_request_rest;
+                    $record = $modify_request;
+                    $record->id = $record->record_id;
+                } else {
+                    $rests = $record->rest;
+                }
+            } else {
+                $status = null;
+                $rests = $record->rest;
+            }
+
             $rest_sum = 0;
             $work_sum = 0;
             $day = $record->day;
@@ -252,7 +281,6 @@ class ListController extends Controller
         $get_days = new Carbon($year_month);
         $days = $get_days->daysInMonth;
         $export_records = [];
-        $records = collect();
 
         for ($i = 1; $i <= $days; $i++) {
             $date_display = new Carbon($year_month . '-' . $i);
@@ -265,27 +293,25 @@ class ListController extends Controller
         }
 
         foreach ($records_origin as $loop => $record) {
-            $rests = $record->rest;
+            $modify_request = $record->modify_request;
+            if ($modify_request != null) {
+                $status = $modify_request->status;
+                if ($status == 2) {
+                    $rests = $modify_request->modify_request_rest;
+                    $record = $modify_request;
+                    $record->id = $record->record_id;
+                } else {
+                    $rests = $record->rest;
+                }
+            } else {
+                $status = null;
+                $rests = $record->rest;
+            }
+
             $rest_sum = 0;
             $work_sum = 0;
             $day = $record->day;
             $date = $record->year . "-" . $record->month . "-" . $record->day;
-
-            if (!isset($record->clock_out)) {
-                $work_time = null;
-                $export_records[$day]['work_time'] = null;
-            } else {
-                $start_hour = new Carbon($date . " " . $record->clock_in);
-                $end_hour = new Carbon($date . " " . $record->clock_out);
-                $work_sum = $start_hour->diffInMinutes($end_hour);
-                $work_sum = $work_sum - $rest_sum;
-                $work_hour_sum = floor($work_sum / 60);
-                $work_minute_sum = $work_sum % 60;
-                $work_time = $work_hour_sum . ':' . $work_minute_sum;
-                $work_time = date('G:i', strtotime($work_time));
-                $export_records[$day]['clock_in'] = substr($record->clock_in, 0, 5);
-                $export_records[$day]['clock_out'] = substr($record->clock_out, 0, 5);
-            }
 
             foreach ($rests as $rest_loop => $rest) {
                 if ($rest_loop == 0) {
@@ -318,7 +344,23 @@ class ListController extends Controller
                 }
             }
 
-            $records[$day] = $record;
+            if (!isset($record->clock_out)) {
+                $work_time = null;
+                $export_records[$day]['work_time'] = null;
+            } else {
+                $start_hour = new Carbon($date . " " . $record->clock_in);
+                $end_hour = new Carbon($date . " " . $record->clock_out);
+                $work_sum = $start_hour->diffInMinutes($end_hour);
+                $work_sum = $work_sum - $rest_sum;
+                $work_hour_sum = floor($work_sum / 60);
+                $work_minute_sum = $work_sum % 60;
+                $work_time = $work_hour_sum . ':' . $work_minute_sum;
+                $work_time = date('G:i', strtotime($work_time));
+                $export_records[$day]['clock_in'] = substr($record->clock_in, 0, 5);
+                $export_records[$day]['clock_out'] = substr($record->clock_out, 0, 5);
+            }
+
+
             $export_records[$day]['work_time'] = $work_time;
         }
 
