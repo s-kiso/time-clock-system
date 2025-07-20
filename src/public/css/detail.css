@@ -51,6 +51,7 @@ input, textarea, select, button{
     letter-spacing: 1.5px;
     padding: 5px 0;
     text-align: center;
+    vertical-align: middle;
     width: 35%;
 }
 
@@ -97,6 +98,8 @@ input, textarea, select, button{
     font-weight: 700;
     letter-spacing: 1.5px;
     padding: 5px 0;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .table__remarks-input{
