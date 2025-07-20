@@ -12,6 +12,7 @@
 @section('content')
 
 @include('components.admin_header')
+
 <form action="/admin/login" method="post" class="authenticate center">
     @csrf
     <h1 class="page__title">管理者ログイン</h1>

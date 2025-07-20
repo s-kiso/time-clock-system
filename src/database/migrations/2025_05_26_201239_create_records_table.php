@@ -19,7 +19,7 @@ class CreateRecordsTable extends Migration
             $table->string('year');
             $table->string('month');
             $table->string('day');
-            $table->time('clock_in')->nullable();
+            $table->time('clock_in');
             $table->time('clock_out')->nullable();
             $table->string('notes')->nullable();
             $table->timestamps();

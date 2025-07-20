@@ -1,7 +1,8 @@
 .contents{
     text-align: center;
     background-color: #F0EFF2;
-    height: calc(100vh - 60px);
+    min-height: calc(100vh - 60px);
+    height: 100%;
     padding: 120px 0;
 }
 

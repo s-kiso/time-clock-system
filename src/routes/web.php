@@ -31,12 +31,12 @@ Route::get('/stamp_correction_request/list', [RecordController::class, 'apply'])
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin_login_show');
 Route::post('/admin/login', [AdminLoginController::class, 'login']);
 Route::post('/admin/logout', [AdminLogoutController::class, 'logout']);
-Route::get('/admin/attendance/list', [ListController::class, 'list'])->name('admin_list_home');
+Route::get('/admin/attendance/list', [ListController::class, 'list'])->name('admin_list_home')->middleware('verified');
 Route::post('/admin/attendance/list', [ListController::class, 'listed']);
-Route::get('/admin/staff/list', [ListController::class, 'staff_list']);
-Route::get('/admin/attendance/staff/{id}', [ListController::class, 'staff_detail'])->name('staff.detail');
+Route::get('/admin/staff/list', [ListController::class, 'staff_list'])->middleware('verified');
+Route::get('/admin/attendance/staff/{id}', [ListController::class, 'staff_detail'])->name('staff.detail')->middleware('verified');
 Route::post('/admin/attendance/staff/{id}', [ListController::class, 'staff_detail_post'])->name('staff.detail_post');
-Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [ListController::class, 'approve'])->name('modify.approve');
+Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [ListController::class, 'approve'])->name('modify.approve')->middleware('verified');
 Route::post('/stamp_correction_request/approve/{attendance_correct_request}', [ListController::class, 'approved'])->name('modify.approved');
 
 Route::post('/admin/attendance/staff/{id}/export', [ListController::class, 'staff_detail_export'])->name('staff.detail_export');

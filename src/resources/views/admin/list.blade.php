@@ -11,7 +11,6 @@
 <!-- 本体 -->
 @section('content')
 
-
 @include('components.admin_header')
 
 <div class="main">

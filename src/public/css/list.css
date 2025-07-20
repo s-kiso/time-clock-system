@@ -1,6 +1,7 @@
 .main{
     background-color: #F0EFF2;
     padding: 80px 0;
+    min-height: calc(100vh - 60px);
 }
 
 .page__title{
@@ -15,6 +16,7 @@
 .contents{
     width: 60%;
     margin: 0 auto;
+    height: 100%;
 }
 
 .list__header{

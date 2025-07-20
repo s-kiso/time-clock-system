@@ -18,6 +18,7 @@ class UsersTableSeeder extends Seeder
         $param = [
             'name' => '管理者ユーザー1',
             'email' => 'admin1@example.com',
+            'email_verified_at' => '2025-07-18 10:00:00',
             'password' => Hash::make('password'),
             'admin_check' => '1',
         ];
@@ -26,6 +27,7 @@ class UsersTableSeeder extends Seeder
         $param = [
             'name' => '一般ユーザー1',
             'email' => 'general1@example.com',
+            'email_verified_at' => '2025-07-18 10:00:00',
             'password' => Hash::make('password'),
         ];
         User::create($param);
@@ -33,6 +35,7 @@ class UsersTableSeeder extends Seeder
         $param = [
             'name' => '一般ユーザー2',
             'email' => 'general2@example.com',
+            'email_verified_at' => '2025-07-18 10:00:00',
             'password' => Hash::make('password'),
         ];
         User::create($param);
