@@ -28,8 +28,6 @@
 <h3>メール認証</h3>
 <p>mailhogを使用しています。.envファイルを以下の通り修正してください。</p>
 <ul>
-  <li>MAIL_HOSt=mailhog</li>
-  <li>MAIL_PORT=1025</li>
   <li>MAIL_FROM_ADDRESSに任意のアドレスを入力</li>
 </ul>
   
