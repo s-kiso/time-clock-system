@@ -42,12 +42,6 @@
 
 <h4>一般ユーザ</h4>
 <ol>
-  <li>管理者ユーザー1</li>
-  <ul>
-    <li>name: 管理者ユーザー1</li>
-    <li>email: admin1@example.com</li>
-    <li>password: password</li>
-  </ul>
   <li>一般ユーザー1</li>
   <ul>
     <li>name: 一般ユーザー1</li>
